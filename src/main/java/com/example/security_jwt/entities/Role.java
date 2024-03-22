@@ -2,16 +2,13 @@ package com.example.security_jwt.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
 @Table(name = "roles")
-public class Role {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+@Data
+public class Role extends BaseEntity {
 
     @Column(name = "name")
     private  String name;

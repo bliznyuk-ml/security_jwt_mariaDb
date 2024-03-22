@@ -1,7 +1,9 @@
 package com.example.security_jwt.service;
 
 import com.example.security_jwt.dtos.RegistrationUserDto;
+import com.example.security_jwt.entities.Company;
 import com.example.security_jwt.entities.User;
+import com.example.security_jwt.repositories.CompanyRepository;
 import com.example.security_jwt.repositories.RoleRepository;
 import com.example.security_jwt.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,7 @@ public class UserService implements UserDetailsService {
     //сделать отдельный сервис для ролей
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final CompanyRepository companyRepository;
 
     public Optional<User> findByUsername(String username){
         return userRepository.findByUsername(username);
@@ -46,10 +49,16 @@ public class UserService implements UserDetailsService {
     public User createNewUser(RegistrationUserDto registrationUserDto){
         //Добавить проверку на существование юзера и роли, которую добавляем ему
         User user = new User();
+        Company company = new Company();
+        company.setName(registrationUserDto.getCompanyName());
+        company.setAddress(registrationUserDto.getAddress());
+        companyRepository.save(company);
+        company = companyRepository.findCompanyByName(registrationUserDto.getCompanyName());
         user.setUsername(registrationUserDto.getUsername());
         user.setEmail(registrationUserDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setRoles(List.of(roleService.getUserRole()));
+        user.setCompany(company);
         return userRepository.save(user);
     }
 }

@@ -35,7 +35,6 @@ public class AuthService {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @PostMapping("/registration")
     public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto){
         if(!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())){
             return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Passwords not equals"), HttpStatus.BAD_REQUEST);

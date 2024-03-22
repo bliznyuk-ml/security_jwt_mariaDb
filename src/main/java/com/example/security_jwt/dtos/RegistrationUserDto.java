@@ -7,5 +7,7 @@ public class RegistrationUserDto {
     private String username;
     private String password;
     private String confirmPassword;
+    private String companyName;
+    private String address;
     private String email;
 }
