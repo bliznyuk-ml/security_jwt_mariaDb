@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends CompanyOwned {
 
     @Column(name = "username")
     private String username;
@@ -21,7 +21,7 @@ public class User extends BaseEntity {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column (name = "email")
+    @Column (name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
@@ -35,7 +35,7 @@ public class User extends BaseEntity {
     )
     private List<Role> roles;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "company_id")
-    private Company company;
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "company_id")
+//    private Company company;
 }

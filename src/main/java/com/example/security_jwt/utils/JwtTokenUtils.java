@@ -1,20 +1,22 @@
 package com.example.security_jwt.utils;
 
+import com.example.security_jwt.entities.User;
+import com.example.security_jwt.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenUtils {
 
     @Value("${jwt.secret}")
@@ -22,9 +24,8 @@ public class JwtTokenUtils {
 
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
+    private final UserService userService;
 
-
-    //в случае если нужно добавить в токен предприятие, но надо брать своего юзера
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         List<String> roleList = userDetails.getAuthorities().stream()
@@ -32,7 +33,11 @@ public class JwtTokenUtils {
                 .collect(Collectors.toList());
 
         claims.put("roles", roleList);
-        //claims.put("company",user.getCompany())
+
+        //добавление названия предприятия в токен
+        Optional<User> userOptional = userService.findByUsername(userDetails.getUsername());
+        userOptional.ifPresent(user -> claims.put("company", user.getCompany().getCompanyName()));
+
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
         return Jwts.builder()

@@ -6,6 +6,7 @@ import com.example.security_jwt.dtos.RegistrationUserDto;
 import com.example.security_jwt.dtos.UserDto;
 import com.example.security_jwt.entities.User;
 import com.example.security_jwt.exceptions.AppError;
+import com.example.security_jwt.exceptions.DuplicateEmailException;
 import com.example.security_jwt.utils.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,14 +36,29 @@ public class AuthService {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
+//    public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto){
+//        if(!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())){
+//            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Passwords not equals"), HttpStatus.BAD_REQUEST);
+//        }
+//        if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()){
+//            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User with username is exist"), HttpStatus.BAD_REQUEST);
+//        }
+//        User user = userService.createNewUser(registrationUserDto);
+//        return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername(), user.getEmail()));
+//    }
+
     public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto){
-        if(!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())){
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Passwords not equals"), HttpStatus.BAD_REQUEST);
+        try {
+            if(!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())){
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "Passwords not equals"), HttpStatus.BAD_REQUEST);
+            }
+            if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()){
+                return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User with username " + registrationUserDto.getUsername() + " is exist"), HttpStatus.BAD_REQUEST);
+            }
+            userService.createNewUser(registrationUserDto);
+            return ResponseEntity.ok("User successfully created");
+        } catch (DuplicateEmailException e) {
+            return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), "Данный email " + registrationUserDto.getEmail() + " уже существует"), HttpStatus.CONFLICT);
         }
-        if (userService.findByUsername(registrationUserDto.getUsername()).isPresent()){
-            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), "User with username is exist"), HttpStatus.BAD_REQUEST);
-        }
-        User user = userService.createNewUser(registrationUserDto);
-        return ResponseEntity.ok(new UserDto(user.getId(), user.getUsername(), user.getEmail()));
     }
 }

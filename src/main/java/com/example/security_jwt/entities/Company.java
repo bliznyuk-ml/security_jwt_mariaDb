@@ -1,9 +1,6 @@
 package com.example.security_jwt.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -20,9 +17,14 @@ import java.util.Set;
 @ToString(exclude = "users")
 public class Company extends BaseEntity {
 
-    private String name;
+    @Column(name = "company_name")
+    private String companyName;
+    @Column(name = "address")
     private String address;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
+
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    private Set<Equipment> equipmentSet= new HashSet<>();
 }

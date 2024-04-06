@@ -3,8 +3,8 @@ package com.example.security_jwt.service;
 import com.example.security_jwt.dtos.RegistrationUserDto;
 import com.example.security_jwt.entities.Company;
 import com.example.security_jwt.entities.User;
+import com.example.security_jwt.exceptions.DuplicateEmailException;
 import com.example.security_jwt.repositories.CompanyRepository;
-import com.example.security_jwt.repositories.RoleRepository;
 import com.example.security_jwt.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -49,16 +49,30 @@ public class UserService implements UserDetailsService {
     public User createNewUser(RegistrationUserDto registrationUserDto){
         //Добавить проверку на существование юзера и роли, которую добавляем ему
         User user = new User();
-        Company company = new Company();
-        company.setName(registrationUserDto.getCompanyName());
-        company.setAddress(registrationUserDto.getAddress());
-        companyRepository.save(company);
-        company = companyRepository.findCompanyByName(registrationUserDto.getCompanyName());
+        Company company = companyRepository.findCompanyByCompanyName(registrationUserDto.getCompanyName());
+        if(company != null){
+            setUser(registrationUserDto, user, company);
+        } else {
+            company = new Company();
+            company.setCompanyName(registrationUserDto.getCompanyName());
+            company.setAddress(registrationUserDto.getAddress());
+            companyRepository.save(company);
+            company = companyRepository.findCompanyByCompanyName(registrationUserDto.getCompanyName());
+            setUser(registrationUserDto, user, company);
+        }
+        return userRepository.save(user);
+    }
+
+    private void setUser(RegistrationUserDto registrationUserDto, User user, Company company) {
+        String email = registrationUserDto.getEmail();
+        boolean b = userRepository.existsByEmail(email);
+        if (b) {
+            throw new DuplicateEmailException("Email already exists: " + email);
+        }
         user.setUsername(registrationUserDto.getUsername());
         user.setEmail(registrationUserDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
         user.setRoles(List.of(roleService.getUserRole()));
         user.setCompany(company);
-        return userRepository.save(user);
     }
 }
