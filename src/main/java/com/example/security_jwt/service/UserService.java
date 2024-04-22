@@ -1,9 +1,11 @@
 package com.example.security_jwt.service;
 
 import com.example.security_jwt.dtos.RegistrationUserDto;
+import com.example.security_jwt.dtos.UserDto;
 import com.example.security_jwt.entities.Company;
 import com.example.security_jwt.entities.User;
 import com.example.security_jwt.exceptions.DuplicateEmailException;
+import com.example.security_jwt.exceptions.UserNotFoundException;
 import com.example.security_jwt.repositories.CompanyRepository;
 import com.example.security_jwt.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -44,6 +46,20 @@ public class UserService implements UserDetailsService {
                 user.getPassword(),
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
         );
+    }
+
+    public UserDto findUserById(Long id){
+       Optional <User> userOptional = userRepository.findById(id);
+       UserDto userDto = new UserDto();
+       if(userOptional.isPresent()){
+           User user = userOptional.get();
+           userDto.setId(user.getId());
+           userDto.setUsername(user.getUsername());
+           userDto.setEmail(user.getEmail());
+           return userDto;
+       } else {
+           throw new UserNotFoundException("User with id: " + id + " not found");
+       }
     }
 
     public User createNewUser(RegistrationUserDto registrationUserDto){
