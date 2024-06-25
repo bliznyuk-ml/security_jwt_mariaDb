@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -40,12 +41,17 @@ public class SecurityConfig {
                                 .requestMatchers(antMatcher("/h2-console/**")).permitAll()
                                 .requestMatchers(antMatcher("/secured")).authenticated()
                                 .requestMatchers(antMatcher("/info")).authenticated()
+                                .requestMatchers(antMatcher("/equipment")).authenticated()
                                 .requestMatchers(antMatcher("/admin")).hasRole("ADMIN")
-                                .requestMatchers(antMatcher("/demo/auth")).permitAll()
+                                .requestMatchers(antMatcher("/login")).permitAll()
+                                .requestMatchers(antMatcher("/hello")).permitAll()
+                                .requestMatchers(antMatcher("/refresh")).permitAll()
+                                .requestMatchers(antMatcher("/registration")).permitAll()
                                 .anyRequest().permitAll()
                 )
                 .httpBasic(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+             //   .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
@@ -69,4 +75,9 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
         return authenticationConfiguration.getAuthenticationManager();
     }
+// look PasswordEncodingConfig
+//    @Bean
+//    public PasswordEncoder passwordEncoder(){
+//        return new BCryptPasswordEncoder();
+//    }
 }

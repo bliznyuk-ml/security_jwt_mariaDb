@@ -31,12 +31,12 @@ public class MainController {
     private final UserService userService;
 
     @GetMapping("/unsecured")
-    public String unsecuredData(){
+    public String unsecuredData() {
         return "Unsecured Data";
     }
 
     @GetMapping("/secured")
-    public String securedData(){
+    public String securedData() {
         return "Secured data";
     }
 
@@ -64,7 +64,7 @@ public class MainController {
     }
 
     @PostMapping("/setqrcode/{text}")
-    public String setQRCode(@PathVariable String text){
+    public String setQRCode(@PathVariable String text) {
         String qrCodeText = text;
         String filePath = "src/main/resources/qrcodes/" + text + ".png";
 
@@ -80,12 +80,12 @@ public class MainController {
 
     @GetMapping("/getqrcode/{id}")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<ByteArrayResource> getQRCodeImage(@PathVariable String id){
+    public ResponseEntity<ByteArrayResource> getQRCodeImage(@PathVariable String id) {
         String fileName = id + ".png";
 
-        try{
+        try {
             Path qrCodePath = Paths.get("src/main/resources/qrcodes/", fileName);
-            byte[]qrCodeBytes = Files.readAllBytes(qrCodePath);
+            byte[] qrCodeBytes = Files.readAllBytes(qrCodePath);
             ByteArrayResource resource = new ByteArrayResource(qrCodeBytes);
 
             return ResponseEntity.ok()
@@ -100,7 +100,7 @@ public class MainController {
 
     @GetMapping("getemployee/{id}")
     @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<UserDto> showUser(@PathVariable Long id){
+    public ResponseEntity<UserDto> showUser(@PathVariable Long id) {
         try {
             UserDto userDto = userService.findUserById(id);
             return ResponseEntity.ok(userDto);
