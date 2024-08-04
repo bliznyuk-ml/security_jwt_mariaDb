@@ -32,43 +32,43 @@ public class JwtTokenUtils {
 
     private final UserService userService;
 
-//    public String generateToken(UserDetails userDetails) {
-//        Map<String, Object> claims = new HashMap<>();
-//        List<String> roleList = userDetails.getAuthorities().stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.toList());
-//
-//        claims.put("roles", roleList);
-//
-//        //добавление названия предприятия в токен
-//        Optional<User> userOptional = userService.findByUsername(userDetails.getUsername());
-//
-//        userOptional.ifPresent(user -> claims.put("company", user.getCompany().getCompanyName()));
-//        userOptional.ifPresent(user -> claims.put("first_name", user.getFirstName()));
-//        userOptional.ifPresent(user -> claims.put("last_name", user.getLastName()));
-//
-//        Date issuedDate = new Date();
-//        Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
-//        return Jwts.builder()
-//                .setClaims(claims)
-//                .setSubject(userDetails.getUsername())
-//                .setIssuedAt(issuedDate)
-//                .setExpiration(expiredDate)
-//                .signWith(SignatureAlgorithm.HS512, secret)
-//                .compact();
-//    }
-
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        List<String> roleList = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        claims.put("roles", roleList);
+
+        //добавление названия предприятия в токен
+        Optional<User> userOptional = userService.findByUsername(userDetails.getUsername());
+
+        userOptional.ifPresent(user -> claims.put("company", user.getCompany().getCompanyName()));
+        userOptional.ifPresent(user -> claims.put("first_name", user.getFirstName()));
+        userOptional.ifPresent(user -> claims.put("last_name", user.getLastName()));
+
+        Date issuedDate = new Date();
+        Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtLifetime.toMillis()))
+                .setIssuedAt(issuedDate)
+                .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
+
+//    public String generateToken(UserDetails userDetails){
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+//        return Jwts.builder()
+//                .setClaims(claims)
+//                .setSubject(userDetails.getUsername())
+//                .setIssuedAt(new Date())
+//                .setExpiration(new Date(System.currentTimeMillis() + jwtLifetime.toMillis()))
+//                .signWith(SignatureAlgorithm.HS512, secret)
+//                .compact();
+//    }
 
     public String generateRefreshToken(UserDetails userDetails){
         return Jwts.builder()

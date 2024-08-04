@@ -22,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/hello")
     public ResponseEntity<?> helloWorld(@RequestBody String request){
-        System.out.println("Hello World");
+        //System.out.println("Hello World");
         System.out.println(request);
         return ResponseEntity.ok(request);
     }

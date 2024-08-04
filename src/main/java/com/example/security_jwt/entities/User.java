@@ -12,7 +12,7 @@ import java.util.List;
 @Table(name = "users")
 public class User extends CompanyOwned {
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @Column(name = "first_name")

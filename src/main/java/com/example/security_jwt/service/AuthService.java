@@ -58,21 +58,6 @@ public class AuthService {
                 .body(new JwtResponse(jwt, refreshToken));
     }
 
-//    public ResponseEntity<?> refreshAuthToken(HttpServletRequest request, HttpServletResponse response) {
-//        Optional<Cookie> jwtCookie = Arrays.stream(request.getCookies())
-//                .filter(cookie -> "jwt-token".equals(cookie.getName()))
-//                .findFirst();
-//        if (jwtCookie.isPresent()) {
-//            String token = jwtCookie.get().getValue();
-//            if (jwtTokenUtils.isTokenExpired(token)) {
-//                return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Token expired"), HttpStatus.UNAUTHORIZED);
-//            }
-//            String refreshedToken = jwtTokenUtils.refreshToken(token);
-//            addCookie(response, "jwt-token", refreshedToken, (int) jwtTokenUtils.getJwtLifetime().getSeconds());
-//            return ResponseEntity.ok(new JwtResponse(refreshedToken));
-//        }
-//        return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), "Token not found"), HttpStatus.UNAUTHORIZED);
-//    }
 
     public ResponseEntity<?> refreshAuthToken(String refreshToken){
         if(!jwtTokenUtils.validateToken(refreshToken)){
@@ -91,7 +76,6 @@ public class AuthService {
     }
 
 
-
     public ResponseEntity<?> createNewUser(RegistrationUserDto registrationUserDto){
         try {
             if(!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())){
@@ -107,11 +91,11 @@ public class AuthService {
         }
     }
 
-    private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
+   /* private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
-    }
+    }*/
 }

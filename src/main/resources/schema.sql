@@ -14,7 +14,7 @@ CREATE TABLE companies
 create table users
 (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
-    username   VARCHAR(50)  NOT NULL,
+    username   VARCHAR(50)  NOT NULL UNIQUE ,
     first_name VARCHAR(100),
     last_name  VARCHAR(100),
     email      VARCHAR(100) UNIQUE ,
